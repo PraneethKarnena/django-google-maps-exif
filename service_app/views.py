@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
 
 
 @require_http_methods(['GET'])
@@ -47,3 +48,29 @@ def registration_view(request):
         except Exception as e:
             messages.add_message(request, messages.ERROR, str(e))
             return HttpResponseRedirect(reverse('service_app:registration_page'))
+
+
+@require_http_methods(['GET', 'POST'])
+def login_view(request):
+    # GET request: render a Login form
+    if request.method == 'GET':
+        return render(request, 'service/login.html')
+
+    else:
+        # POST request: analyze fields and post-process accordingly
+        try:
+            email = request.POST['email']
+            password = request.POST['password']
+
+            user = authenticate(username=email, password=password)
+            # User exists! Login the user and redirect to dashboard
+            if user is not None:
+                login(request, user)
+                return HttpResponseRedirect(reverse('service_app:dashboard_page'))
+
+            else:
+                raise Exception('Invalid credentials or such user!')
+
+        except Exception as e:
+            messages.add_message(request, messages.ERROR, str(e))
+            return HttpResponseRedirect(reverse('service_app:login_page'))
