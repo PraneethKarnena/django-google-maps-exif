@@ -62,6 +62,7 @@ def login_view(request):
             email = request.POST['email']
             password = request.POST['password']
 
+            # Try to authenticate the User
             user = authenticate(username=email, password=password)
             # User exists! Login the user and redirect to dashboard
             if user is not None:
