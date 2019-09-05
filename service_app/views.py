@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 
 
 @require_http_methods(['GET'])
@@ -17,6 +18,10 @@ def home_view(request):
 
 @require_http_methods(['GET', 'POST'])
 def registration_view(request):
+    # If the user is already logged in, redirect to Dashboard
+    if request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('service_app:dashboard_page'))
+
     if request.method == 'GET':
         # GET request: render a sign up form
         return render(request, 'service/registration.html')
@@ -52,6 +57,10 @@ def registration_view(request):
 
 @require_http_methods(['GET', 'POST'])
 def login_view(request):
+    # If the user is already logged in, redirect to Dashboard
+    if request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('service_app:dashboard_page'))
+
     # GET request: render a Login form
     if request.method == 'GET':
         return render(request, 'service/login.html')
@@ -75,3 +84,13 @@ def login_view(request):
         except Exception as e:
             messages.add_message(request, messages.ERROR, str(e))
             return HttpResponseRedirect(reverse('service_app:login_page'))
+
+
+@require_http_methods(['GET', 'POST'])
+@login_required
+def dashboard_view(request):
+    if request.method == 'GET':
+        return render(request, 'service/dashboard.html')
+
+    else:
+        pass
