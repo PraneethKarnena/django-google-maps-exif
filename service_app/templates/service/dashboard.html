@@ -49,24 +49,34 @@
           <form action="" method="post">
             {% csrf_token %}
             <div class="form-group">
-              <label for="source_images">Source Images</label>
+              <label for="source_image">Source Image</label>
               <input
                 class="form-control-file"
                 type="file"
-                name="source_images"
-                id="source_images"
-                multiple
+                name="source_image"
+                id="source_image"
                 required
               />
             </div>
+
             <div class="form-group">
-              <label for="dest_images">Destination Images</label>
+              <label for="waypoint_images">Waypoint Images (optional)</label>
               <input
                 class="form-control-file"
                 type="file"
-                name="dest_images"
-                id="dest_images"
+                name="waypoint_images"
+                id="waypoint_images"
                 multiple
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="dest_image">Destination Image</label>
+              <input
+                class="form-control-file"
+                type="file"
+                name="dest_image"
+                id="dest_image"
                 required
               />
             </div>
