@@ -36,6 +36,7 @@ class JobModel(models.Model):
         ('ERR', 'Error'),
     )
     status = models.CharField(max_length=3, choices=JOB_STATUS_CHOICES, default='PRS')
+    route = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f'{str(self.user)} - {self.status}'
