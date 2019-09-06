@@ -11,6 +11,7 @@ class ImageModel(models.Model):
     IMAGE_TYPE_CHOICES = (
         ('SRC', 'Source'),
         ('DST', 'Destination'),
+        ('WPT', 'Waypoint'),
     )
     image_type = models.CharField(max_length=3, choices=IMAGE_TYPE_CHOICES, null=False, blank=False)
     latitude = models.FloatField(null=True, blank=True)
