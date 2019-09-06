@@ -97,4 +97,8 @@ def dashboard_view(request):
         return render(request, 'service/dashboard.html')
 
     else:
-        pass
+        try:
+            pass
+        except Exception as e:
+            messages.add_message(request, messages.ERROR, str(e))
+            return HttpResponseRedirect(reverse('service_app:dashboard_page'))
