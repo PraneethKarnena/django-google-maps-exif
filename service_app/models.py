@@ -13,8 +13,8 @@ class ImageModel(models.Model):
         ('DST', 'Destination'),
     )
     image_type = models.CharField(max_length=3, choices=IMAGE_TYPE_CHOICES, null=False, blank=False)
-    lat = models.FloatField(null=True, blank=True)
-    lng = models.FloatField(null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
 
     def __str__(self):
         return f'{str(self.image)} - {self.image_type}'
