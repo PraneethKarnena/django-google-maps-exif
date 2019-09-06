@@ -98,7 +98,10 @@ def dashboard_view(request):
 
     else:
         try:
-            pass
+            success_msg = 'Your request has been received. Refresh this page for any updates!'
+            messages.add_message(request, messages.SUCCESS, success_msg)
+            return HttpResponseRedirect(reverse('service_app:dashboard_page'))
+
         except Exception as e:
             messages.add_message(request, messages.ERROR, str(e))
             return HttpResponseRedirect(reverse('service_app:dashboard_page'))
