@@ -2,6 +2,8 @@
 This views.py contains business logic of all the pages.
 """
 
+import threading
+
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
@@ -10,6 +12,8 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+
+from . import models
 
 
 @require_http_methods(['GET'])
@@ -98,6 +102,12 @@ def dashboard_view(request):
 
     else:
         try:
+
+            # Save the job and start processing asynchronously
+            job = models.JobModel.objects.create(user=request.user)
+            t = threading.Thread(target=job_wrapper, args=(job))
+            t.start()
+
             success_msg = 'Your request has been received. Refresh this page for any updates!'
             messages.add_message(request, messages.SUCCESS, success_msg)
             return HttpResponseRedirect(reverse('service_app:dashboard_page'))
@@ -105,3 +115,7 @@ def dashboard_view(request):
         except Exception as e:
             messages.add_message(request, messages.ERROR, str(e))
             return HttpResponseRedirect(reverse('service_app:dashboard_page'))
+
+
+def job_wrapper(job):
+    pass
