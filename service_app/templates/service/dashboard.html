@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Dashboard - Distance Matrix</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="row mt-3">
+        <div class="col-lg-3"></div>
+        <div class="col-lg-6 text-center">
+          <h1>Dashboard</h1>
+        </div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-1">
+          <a
+            class="btn btn-secondary"
+            href="{% url 'service_app:logout_page' %}"
+            >Logout</a
+          >
+        </div>
+      </div>
+
+      {% if messages %}
+      <div class="row mt-3">
+        <div class="col-lg-1"></div>
+        <div class="col-lg-10 text-center">
+          {% for message in messages %}
+          <div
+            class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %}"
+            role="alert"
+          >
+            {{ message }}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="row mt-3">
+        <div class="col-lg-3"></div>
+        <div class="col-lg-6">
+          <form action="" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="source_images">Source Images</label>
+              <input
+                class="form-control-file"
+                type="file"
+                name="source_images"
+                id="source_images"
+                multiple
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="dest_images">Destination Images</label>
+              <input
+                class="form-control-file"
+                type="file"
+                name="dest_images"
+                id="dest_images"
+                multiple
+                required
+              />
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
