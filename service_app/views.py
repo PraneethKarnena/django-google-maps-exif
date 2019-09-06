@@ -98,14 +98,15 @@ def login_view(request):
 @login_required
 def dashboard_view(request):
     if request.method == 'GET':
-        return render(request, 'service/dashboard.html')
+        jobs = models.JobModel.objects.filter(user=request.user)
+        return render(request, 'service/dashboard.html', {'jobs': jobs})
 
     else:
         try:
 
             # Save the job and start processing asynchronously
             job = models.JobModel.objects.create(user=request.user)
-            t = threading.Thread(target=job_wrapper, args=(job))
+            t = threading.Thread(target=job_wrapper, args=(request, job))
             t.start()
 
             success_msg = 'Your request has been received. Refresh this page for any updates!'
@@ -117,5 +118,5 @@ def dashboard_view(request):
             return HttpResponseRedirect(reverse('service_app:dashboard_page'))
 
 
-def job_wrapper(job):
+def job_wrapper(request, job):
     pass
