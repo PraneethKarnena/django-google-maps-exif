@@ -11,3 +11,5 @@ The coordinates are extracted from image EXIF data.
  - Enter a Destination image
  - The system will calculate the `shortest` path between the Source and Destination, through the Waypoints.
  - A beautiful Map is generated
+
+**Demo**: [https://dgdm.herokuapp.com/](https://dgdm.herokuapp.com/)
