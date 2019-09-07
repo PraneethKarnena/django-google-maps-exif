@@ -4,6 +4,7 @@ This views.py contains business logic of all the pages.
 
 import os
 import threading
+import googlemaps
 
 from PIL import Image
 from PIL.ExifTags import TAGS
@@ -168,12 +169,16 @@ def process_images(job):
     latitude, longitude = get_lat_long(source_image.image.name)
     source_image.longitude = longitude
     source_image.latitude = latitude
+    place_name = do_reverse_geocoding(latitude, longitude)
+    source_image.place_name = place_name
     source_image.save()
 
     destination_image = job.destination_image
     latitude, longitude = get_lat_long(destination_image.image.name)
     destination_image.longitude = longitude
     destination_image.latitude = latitude
+    place_name = do_reverse_geocoding(latitude, longitude)
+    destination_image.place_name = place_name
     destination_image.save()
 
     waypoints = job.waypoint_images.all()
@@ -182,8 +187,17 @@ def process_images(job):
             latitude, longitude = get_lat_long(waypoint.image.name)
             waypoint.latitude = latitude
             waypoint.longitude = longitude
+            place_name = do_reverse_geocoding(latitude, longitude)
+            waypoint.place_name = place_name
             waypoint.save()
 
+
+# get place name from coordinates
+def do_reverse_geocoding(latitude, longitude):
+    GOOGLE_MAPS_RG_KEY = os.environ.get('GOOGLE_MAPS_RG_KEY')
+    gmaps = googlemaps.Client(key=GOOGLE_MAPS_RG_KEY)
+    reverse_geocode_result = gmaps.reverse_geocode((latitude, longitude))[0]['formatted_address']
+    return reverse_geocode_result
 
 # Return latitude and longitude from an image
 def get_lat_long(image_path):
