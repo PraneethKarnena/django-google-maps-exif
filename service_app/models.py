@@ -38,6 +38,7 @@ class JobModel(models.Model):
 
     route_gps_coords = models.TextField(null=True, blank=True)
     total_distance = models.CharField(max_length=250, null=True, blank=True, default='Calculating...')
+    path_coords = models.TextField(null=True, blank=True)
     static_map = models.ForeignKey(ImageModel, on_delete=models.CASCADE, null=True, blank=True, \
         related_name='job_static_map')
 
