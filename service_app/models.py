@@ -6,7 +6,7 @@ class ImageModel(models.Model):
     """
     Stores Images, and their EXIF data
     """
-    image = models.ImageField(verbose_name='Image', help_text='Upload an Image')
+    image = models.FileField(verbose_name='Image', help_text='Upload an Image')
 
     IMAGE_TYPE_CHOICES = (
         ('SRC', 'Source'),
