@@ -98,6 +98,37 @@
           </form>
         </div>
       </div>
+
+      {% if jobs %}
+      <div class="row mt-3">
+        <div class="col-lg-1"></div>
+        <div class="col-lg-10">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Source</th>
+                <th scope="col">Destination</th>
+                <th scope="col">Total Distance</th>
+                <th scope="col">Map</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for job in jobs %}
+                <tr>
+                  <th scope="row">{{ forloop.counter }}</th>
+                  <th>{{ job.source_image.place_name }}</th>
+                  <th>{{ job.destination_image.place_name }}</th>
+                  <th>{{ job.total_distance }}</th>
+                  <th>{{ job.static_map }}</th>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+
     </div>
   </body>
 </html>
