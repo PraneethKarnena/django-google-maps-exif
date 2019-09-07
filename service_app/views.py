@@ -4,10 +4,13 @@ This views.py contains business logic of all the pages.
 
 import os
 import threading
-import googlemaps
+from tempfile import TemporaryFile
 
 from PIL import Image
 from PIL.ExifTags import TAGS
+
+import googlemaps
+import requests
 
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
@@ -17,6 +20,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.core.files import File
 
 from . import models
 
@@ -150,6 +154,7 @@ def job_wrapper(job):
     try:
         process_images(job)
         calculate_shortest_path(job)
+        generate_static_map(job)
 
     except Exception as e:
         print('error: ', str(e))
@@ -162,6 +167,38 @@ def job_wrapper(job):
 
     finally:
         return
+
+
+
+def generate_static_map(job):
+    GOOGLE_MAPS_ST_KEY = os.environ.get('GOOGLE_MAPS_ST_KEY')
+    GOOGLE_MAPS_ST_BASE_URL = 'https://maps.googleapis.com/maps/api/staticmap'
+    MAP_SIZE = '500x400'
+    PATH = job.path_coords
+
+    API_URL = f'{GOOGLE_MAPS_ST_BASE_URL}?size={MAP_SIZE}&path={PATH}&key={GOOGLE_MAPS_ST_KEY}'
+
+    path_coords = job.path_coords.split('|')
+    for i in range(len(path_coords)):
+        API_URL = f'{API_URL}&markers=label:{i}|{path_coords[i]}'
+
+    # static_map = models.ImageModel.objects.create(
+    #     image=r.content,
+    #     image_type='STA'
+    # )
+    f = models.ImageModel()
+    with TemporaryFile() as tf:
+        r = requests.get(API_URL)
+        tf.write(r.content)
+        tf.seek(0)
+        f.image.save(f'{job.id}.png', File(tf))
+    f.image_type = 'STA'
+    f.save()
+    job.static_map = f
+    job.status = 'COM'
+    job.save()
+
+
 
 
 # calculate the shortest path
@@ -194,7 +231,7 @@ def calculate_shortest_path(job):
         path_coords = f'{path_coords}|{lat},{lng}'
 
     job.total_distance = directions_result[0]['legs'][0]['distance']['text']
-    job.path_coords = path_coords
+    job.path_coords = path_coords.replace('|', '', 1)
     job.save()
 
 
