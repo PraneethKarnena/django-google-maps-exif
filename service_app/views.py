@@ -149,6 +149,7 @@ def dashboard_view(request):
 def job_wrapper(job):
     try:
         process_images(job)
+        calculate_shortest_path(job)
 
     except Exception as e:
         print('error: ', str(e))
@@ -161,6 +162,40 @@ def job_wrapper(job):
 
     finally:
         return
+
+
+# calculate the shortest path
+def calculate_shortest_path(job):
+    source_latitude = job.source_image.latitude
+    source_longitude = job.source_image.longitude
+
+    destination_latitude = job.destination_image.latitude
+    destination_longitude = job.destination_image.longitude
+
+    waypoints = job.waypoint_images.all()
+    wp = ''
+    if waypoints:
+        for waypoint in waypoints:
+            wp = f'{wp}|{waypoint.latitude},{waypoint.longitude}'
+
+    GOOGLE_MAPS_DR_KEY = os.environ.get('GOOGLE_MAPS_DR_KEY')
+    gmaps = googlemaps.Client(key=GOOGLE_MAPS_DR_KEY)
+    directions_result = gmaps.directions(
+        f'{source_latitude},{source_longitude}',
+        f'{destination_latitude},{destination_longitude}',
+        waypoints=wp,
+        optimize_waypoints=True,
+    )
+
+    path_coords = ''
+    for coord in directions_result[0]['legs']:
+        lat = coord['start_location']['lat']
+        lng = coord['start_location']['lng']
+        path_coords = f'{path_coords}|{lat},{lng}'
+
+    job.total_distance = directions_result[0]['legs'][0]['distance']['text']
+    job.path_coords = path_coords
+    job.save()
 
 
 # calls several other methods
