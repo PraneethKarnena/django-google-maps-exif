@@ -37,7 +37,7 @@ class JobModel(models.Model):
     waypoint_images = models.ManyToManyField(ImageModel, related_name='job_waypoint_images')
 
     route_gps_coords = models.TextField(null=True, blank=True)
-    total_distance = models.FloatField(null=True, blank=True, default='Calculating...')
+    total_distance = models.CharField(max_length=250, null=True, blank=True, default='Calculating...')
     static_map = models.ForeignKey(ImageModel, on_delete=models.CASCADE, null=True, blank=True, \
         related_name='job_static_map')
 
