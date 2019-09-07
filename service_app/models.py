@@ -16,7 +16,7 @@ class ImageModel(models.Model):
     image_type = models.CharField(max_length=3, choices=IMAGE_TYPE_CHOICES, null=False, blank=False)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
-    place_name = models.TextField(null=True, blank=True, default='YET_TO_RETRIEVE')
+    place_name = models.TextField(null=True, blank=True, default='Retrieving...')
 
     def __str__(self):
         return self.place_name
