@@ -142,7 +142,7 @@
                       <button type="button" class="btn btn-danger btn-sm" disabled>ERROR</button>
                     {% endif %}
                   </th>
-                  <th>{{ job.static_map }}</th>
+                  <th><a href="{{ job.static_map.image.url }}" target="_blank" class="btn btn-danger">Map</a></th>
                 </tr>
               {% endfor %}
             </tbody>
