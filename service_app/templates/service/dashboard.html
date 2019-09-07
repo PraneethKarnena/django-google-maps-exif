@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+      <meta http-equiv="refresh" content="10">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
@@ -102,6 +103,25 @@
       <br>
 
       {% if jobs %}
+
+      <div class="row mt-3">
+        <div class="col-lg-1"></div>
+        <div class="col-lg-4">
+          <h4>Refreshes in <span id="timer"></span></h4>
+        </div>
+      </div>
+      <br>
+      <script>
+          var maxTime = 10;
+          setInterval(func, 1000);
+          function func(){
+          if (maxTime > 0) {
+          document.getElementById('timer').innerHTML = maxTime + " seconds.";
+          maxTime = maxTime - 1; }
+          else { document.getElementById('timer').innerHTML = "Refreshing..." }
+          }
+          </script>
+
 
       <div class="row mt-3">
         <div class="col-lg-1"></div>
