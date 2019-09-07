@@ -119,4 +119,49 @@ def dashboard_view(request):
 
 
 def job_wrapper(request, job):
-    pass
+    try:
+
+        # save images to the Image table and link to the Job
+        save_images(request, job)
+
+    except Exception as e:
+
+        # If any exception occurs, terminate the process
+        # write error message to database
+        job.status = 'ERR'
+        job.errors = f'{job.errors} {str(e)}.'
+        job.save()
+
+    finally:
+        return
+
+
+def save_images(request, job):
+    source_image = models.ImageModel.objects.create(
+        image=request.POST['source_image'],
+        image_type='SRC',
+    )
+    destination_image = models.ImageModel.objects.create(
+        image=request.POST['source_image'],
+        image_type='DST',
+    )
+
+    # if there are any Waypoints
+    if request.POST['waypoint_images']:
+        waypoints = []
+        for waypoint_image in request.POST['waypoint_images']:
+            waypoint = models.ImageModel.objects.create(
+                image=waypoint_image,
+                image_type='WPT',
+            )
+            waypoints.append(waypoint)
+
+    # Link the above images to the Job
+    job.source_image = source_image
+    job.destination_image = destination_image
+    if waypoints in locals():
+        for waypoint in waypoints:
+            job.waypoints.add(waypoint)
+    job.save()
+
+    return
