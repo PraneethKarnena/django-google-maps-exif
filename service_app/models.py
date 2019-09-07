@@ -30,7 +30,6 @@ class JobModel(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    images = models.ManyToManyField(ImageModel, related_name='jobs')
     source_image = models.ForeignKey(ImageModel, null=True, blank=True, on_delete=models.CASCADE, \
         related_name='job_source_image')
     destination_image = models.ForeignKey(ImageModel, null=True, blank=True, on_delete=models.CASCADE, \
