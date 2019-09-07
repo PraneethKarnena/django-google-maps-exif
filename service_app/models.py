@@ -28,7 +28,7 @@ class JobModel(models.Model):
     """
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    images = models.ManyToManyField(ImageModel)
+    images = models.ManyToManyField(ImageModel, related_name='jobs')
 
     JOB_STATUS_CHOICES = (
         ('PRS', 'Processing'),
@@ -37,6 +37,8 @@ class JobModel(models.Model):
     )
     status = models.CharField(max_length=3, choices=JOB_STATUS_CHOICES, default='PRS')
     route = models.TextField(null=True, blank=True)
+    total_distance = models.FloatField(null=True, blank=True)
+    static_map = models.ForeignKey(ImageModel, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f'{str(self.user)} - {self.status}'
