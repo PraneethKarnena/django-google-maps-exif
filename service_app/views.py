@@ -108,7 +108,12 @@ def login_view(request):
 def dashboard_view(request):
     if request.method == 'GET':
         jobs = models.JobModel.objects.filter(user=request.user)
-        return render(request, 'service/dashboard.html', {'jobs': jobs})
+        pending_jobs = models.JobModel.objects.filter(status='PRS').count()
+        show_timer = False
+        if pending_jobs > 0:
+            show_timer = True
+
+        return render(request, 'service/dashboard.html', {'jobs': jobs, 'show_timer': show_timer})
 
     else:
         try:
