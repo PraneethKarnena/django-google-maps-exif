@@ -16,10 +16,10 @@ class ImageModel(models.Model):
     image_type = models.CharField(max_length=3, choices=IMAGE_TYPE_CHOICES, null=False, blank=False)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
-    place_name = models.TextField(null=True, blank=True)
+    place_name = models.TextField(null=True, blank=True, default='YET_TO_RETRIEVE')
 
     def __str__(self):
-        return f'{str(self.image)} - {self.image_type}'
+        return self.place_name
 
 
 class JobModel(models.Model):
@@ -29,7 +29,18 @@ class JobModel(models.Model):
     """
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
     images = models.ManyToManyField(ImageModel, related_name='jobs')
+    source_image = models.ForeignKey(ImageModel, null=True, blank=True, on_delete=models.CASCADE, \
+        related_name='job_source_image')
+    destination_image = models.ForeignKey(ImageModel, null=True, blank=True, on_delete=models.CASCADE, \
+        related_name='job_destination_image')
+    waypoint_images = models.ManyToManyField(ImageModel, related_name='job_waypoint_images')
+
+    route_gps_coords = models.TextField(null=True, blank=True)
+    total_distance = models.FloatField(null=True, blank=True)
+    static_map = models.ForeignKey(ImageModel, on_delete=models.CASCADE, null=True, blank=True, \
+        related_name='job_static_map')
 
     JOB_STATUS_CHOICES = (
         ('PRS', 'Processing'),
@@ -37,9 +48,6 @@ class JobModel(models.Model):
         ('ERR', 'Error'),
     )
     status = models.CharField(max_length=3, choices=JOB_STATUS_CHOICES, default='PRS')
-    route_gps_coords = models.TextField(null=True, blank=True)
-    total_distance = models.FloatField(null=True, blank=True)
-    static_map = models.ForeignKey(ImageModel, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
-        return f'{str(self.user)} - {self.status}'
+        return self.user.username
