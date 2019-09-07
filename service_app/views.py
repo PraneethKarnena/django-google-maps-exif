@@ -148,9 +148,9 @@ def save_images(request, job):
     )
 
     # if there are any Waypoints
-    if request.POST['waypoint_images']:
+    if list(request.POST['waypoint_images']):
         waypoints = []
-        for waypoint_image in request.POST['waypoint_images']:
+        for waypoint_image in list(request.POST['waypoint_images']):
             waypoint = models.ImageModel.objects.create(
                 image=waypoint_image,
                 image_type='WPT',
