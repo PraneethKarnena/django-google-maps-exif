@@ -2,7 +2,11 @@
 This views.py contains business logic of all the pages.
 """
 
+import os
 import threading
+
+from PIL import Image
+from PIL.ExifTags import TAGS
 
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
@@ -129,8 +133,8 @@ def dashboard_view(request):
                     )
 
             job.save()
-            # t = threading.Thread(target=job_wrapper, args=(request, job))
-            # t.start()
+            t = threading.Thread(target=job_wrapper, args=[job])
+            t.start()
 
             success_msg = 'Your request has been received. Refresh this page for any updates!'
             messages.add_message(request, messages.SUCCESS, success_msg)
@@ -141,9 +145,9 @@ def dashboard_view(request):
             return HttpResponseRedirect(reverse('service_app:dashboard_page'))
 
 
-def job_wrapper(request, job):
+def job_wrapper(job):
     try:
-        pass
+        process_images(job)
 
     except Exception as e:
         print('error: ', str(e))
@@ -156,3 +160,70 @@ def job_wrapper(request, job):
 
     finally:
         return
+
+
+# calls several other methods
+def process_images(job):
+    source_image = job.source_image
+    latitude, longitude = get_lat_long(source_image.image.name)
+    source_image.longitude = longitude
+    source_image.latitude = latitude
+    source_image.save()
+
+    destination_image = job.destination_image
+    latitude, longitude = get_lat_long(destination_image.image.name)
+    destination_image.longitude = longitude
+    destination_image.latitude = latitude
+    destination_image.save()
+
+    waypoints = job.waypoint_images.all()
+    if waypoints:
+        for waypoint in waypoints:
+            latitude, longitude = get_lat_long(waypoint.image.name)
+            waypoint.latitude = latitude
+            waypoint.longitude = longitude
+            waypoint.save()
+
+
+# Return latitude and longitude from an image
+def get_lat_long(image_path):
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+    image_path = f'{MEDIA_ROOT}/{image_path}'
+    image = Image.open(image_path)
+    exif_data = image._getexif()
+
+    gps_info = {}
+    for key, value in exif_data.items():
+
+        if TAGS.get(key) == 'GPSInfo':
+            gps_info[TAGS.get(key)] = value
+            break
+
+    # normalize GPS info
+    normalized_data = normalize_gps_info(gps_info)
+    latitude = convert_rational64u(normalized_data['latitude']['dms'], normalized_data['latitude']['ref'])
+    longitude = convert_rational64u(normalized_data['longitude']['dms'], normalized_data['longitude']['ref'])
+
+    return latitude, longitude
+
+
+def normalize_gps_info(gps_info):
+    latitude = {'ref': gps_info['GPSInfo'][1], 'dms': gps_info['GPSInfo'][2]}
+    longitude = {'ref': gps_info['GPSInfo'][3], 'dms': gps_info['GPSInfo'][4]}
+
+    return {'latitude': latitude, 'longitude': longitude}
+
+
+# convert rational64u to degrees and minutes
+def convert_rational64u(dms, ref):
+    degrees = dms[0][0] / dms[0][1]
+    minutes = dms[1][0] / dms[1][1] / 60.0
+    seconds = dms[2][0] / dms[2][1] / 3600.0
+
+    if ref in ['S', 'W']:
+        degrees = -degrees
+        minutes = -minutes
+        seconds = -seconds
+
+    return round(degrees + minutes + seconds, 5)
