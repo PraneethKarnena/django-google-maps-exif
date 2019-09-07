@@ -125,6 +125,7 @@ def job_wrapper(request, job):
         save_images(request, job)
 
     except Exception as e:
+        print('error: ', str(e))
 
         # If any exception occurs, terminate the process
         # write error message to database
@@ -159,9 +160,9 @@ def save_images(request, job):
     # Link the above images to the Job
     job.source_image = source_image
     job.destination_image = destination_image
-    if waypoints in locals():
+    if waypoints:
         for waypoint in waypoints:
-            job.waypoints.add(waypoint)
+            job.waypoint_images.add(waypoint)
     job.save()
 
     return
