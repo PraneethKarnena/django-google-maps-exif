@@ -98,8 +98,18 @@
           </form>
         </div>
       </div>
+      <br>
+      <br>
 
       {% if jobs %}
+
+      <div class="row mt-3">
+        <div class="col-lg-1"></div>
+        <div class="col-lg-4">
+          <h3>Job Requests</h3>
+        </div>
+      </div>
+
       <div class="row mt-3">
         <div class="col-lg-1"></div>
         <div class="col-lg-10">
@@ -110,6 +120,7 @@
                 <th scope="col">Source</th>
                 <th scope="col">Destination</th>
                 <th scope="col">Total Distance</th>
+                <th scope="col">Status</th>
                 <th scope="col">Map</th>
               </tr>
             </thead>
@@ -120,6 +131,17 @@
                   <th>{{ job.source_image.place_name }}</th>
                   <th>{{ job.destination_image.place_name }}</th>
                   <th>{{ job.total_distance }}</th>
+                  <th>
+                    {% if job.status == 'PRS' %}
+                      <button type="button" class="btn btn-warning btn-sm" disabled>PROCESSING</button>
+                    {% endif %}
+                    {% if job.status == 'COM' %}
+                      <button type="button" class="btn btn-success btn-sm" disabled>SUCCESS</button>
+                    {% endif %}
+                    {% if job.status == 'ERR' %}
+                      <button type="button" class="btn btn-danger btn-sm" disabled>ERROR</button>
+                    {% endif %}
+                  </th>
                   <th>{{ job.static_map }}</th>
                 </tr>
               {% endfor %}
