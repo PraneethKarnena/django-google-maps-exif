@@ -36,7 +36,7 @@ class JobModel(models.Model):
         ('ERR', 'Error'),
     )
     status = models.CharField(max_length=3, choices=JOB_STATUS_CHOICES, default='PRS')
-    route = models.TextField(null=True, blank=True)
+    route_gps_coords = models.TextField(null=True, blank=True)
     total_distance = models.FloatField(null=True, blank=True)
     static_map = models.ForeignKey(ImageModel, on_delete=models.CASCADE, null=True, blank=True)
 
