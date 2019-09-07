@@ -104,10 +104,33 @@ def dashboard_view(request):
     else:
         try:
 
-            # Save the job and start processing asynchronously
+            # Save the images, job and start processing asynchronously
             job = models.JobModel.objects.create(user=request.user)
-            t = threading.Thread(target=job_wrapper, args=(request, job))
-            t.start()
+
+            source_image = models.ImageModel.objects.create(
+                image=request.FILES['source_image'],
+                image_type='SRC',
+            )
+            job.source_image = source_image
+
+            destination_image = models.ImageModel.objects.create(
+                image=request.FILES['destination_image'],
+                image_type='DST',
+            )
+            job.destination_image = destination_image
+
+            # if there are any Waypoints
+            waypoint_images = request.FILES.getlist('waypoint_images')
+            if waypoint_images:
+                for waypoint_image in waypoint_images:
+                    _ = job.waypoint_images.create(
+                        image=waypoint_image,
+                        image_type='WPT',
+                    )
+
+            job.save()
+            # t = threading.Thread(target=job_wrapper, args=(request, job))
+            # t.start()
 
             success_msg = 'Your request has been received. Refresh this page for any updates!'
             messages.add_message(request, messages.SUCCESS, success_msg)
@@ -120,9 +143,7 @@ def dashboard_view(request):
 
 def job_wrapper(request, job):
     try:
-
-        # save images to the Image table and link to the Job
-        save_images(request, job)
+        pass
 
     except Exception as e:
         print('error: ', str(e))
@@ -135,34 +156,3 @@ def job_wrapper(request, job):
 
     finally:
         return
-
-
-def save_images(request, job):
-    source_image = models.ImageModel.objects.create(
-        image=request.POST['source_image'],
-        image_type='SRC',
-    )
-    destination_image = models.ImageModel.objects.create(
-        image=request.POST['source_image'],
-        image_type='DST',
-    )
-
-    # if there are any Waypoints
-    if list(request.POST['waypoint_images']):
-        waypoints = []
-        for waypoint_image in list(request.POST['waypoint_images']):
-            waypoint = models.ImageModel.objects.create(
-                image=waypoint_image,
-                image_type='WPT',
-            )
-            waypoints.append(waypoint)
-
-    # Link the above images to the Job
-    job.source_image = source_image
-    job.destination_image = destination_image
-    if waypoints:
-        for waypoint in waypoints:
-            job.waypoint_images.add(waypoint)
-    job.save()
-
-    return
