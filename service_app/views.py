@@ -215,10 +215,10 @@ def calculate_shortest_path(job):
     destination_longitude = job.destination_image.longitude
 
     waypoints = job.waypoint_images.all()
-    wp = ''
+    wp = []
     if waypoints:
         for waypoint in waypoints:
-            wp = f'{wp}|{waypoint.latitude},{waypoint.longitude}'
+            wp.append(f'{waypoint.latitude},{waypoint.longitude}')
 
     GOOGLE_MAPS_DR_KEY = os.environ.get('GOOGLE_MAPS_DR_KEY')
     gmaps = googlemaps.Client(key=GOOGLE_MAPS_DR_KEY)
@@ -234,6 +234,9 @@ def calculate_shortest_path(job):
         lat = coord['start_location']['lat']
         lng = coord['start_location']['lng']
         path_coords = f'{path_coords}|{lat},{lng}'
+    lat = directions_result[0]['legs'][len(directions_result[0]['legs'])-1]['end_location']['lat']
+    lng = directions_result[0]['legs'][len(directions_result[0]['legs'])-1]['end_location']['lng']
+    path_coords = f'{path_coords}|{lat},{lng}'
 
     job.total_distance = directions_result[0]['legs'][0]['distance']['text']
     job.path_coords = path_coords.replace('|', '', 1)
