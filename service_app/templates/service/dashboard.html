@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Dashboard - Distance Matrix</title>
+    <title>ダッシュボード ー　写真アプリケーション</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css"
@@ -16,14 +16,14 @@
       <div class="row mt-3">
         <div class="col-lg-3"></div>
         <div class="col-lg-6 text-center">
-          <h1>Dashboard</h1>
+          <h1>ダッシュボード ー　写真アプリケーション</h1>
         </div>
         <div class="col-lg-2"></div>
         <div class="col-lg-1">
           <a
             class="btn btn-secondary"
             href="{% url 'service_app:logout_page' %}"
-            >Logout</a
+            >ログアウト</a
           >
         </div>
       </div>
@@ -31,12 +31,12 @@
       <div class="row mt-3 mb-3">
         <div class="col-lg-3"></div>
         <div class="col-lg-6">
-          <h3>How this works: </h3>
+          <h3>アプリの使い方： </h3>
           <ul>
-            <li>Enter a Source</li>
-            <li>Enter Waypoints or through-route</li>
-            <li>Enter a Destination</li>
-            <li>The system will calculate the <code>shortest</code> path between the Source and Destination, through the Waypoints.</li>
+            <li>出発した所の写真をアップロードする</li>
+            <li>途中で止まった場所があれば、そこの写真もアップロードできます（オプション）</li>
+            <li>目的地場所の写真をとってアップロードする</li>
+            <li>アプリが自動的に <code>距離</code> を計算してメンバーのアカウントにデータとして記録されます。</li>
           </ul>
           <p></p>
         </div>
@@ -64,41 +64,38 @@
           <form action="" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group">
-              <label for="source_image">Source Image</label>
+              <label for="source_image">出発した所の写真</label>
               <input
                 class="form-control-file"
                 type="file"
                 name="source_image"
                 id="source_image"
-                accept=".jpg,.png"
                 required
               />
             </div>
 
             <div class="form-group">
-              <label for="waypoint_images">Waypoint Images (optional)</label>
+              <label for="waypoint_images">途中で止まった場所の写真（オプション）</label>
               <input
                 class="form-control-file"
                 type="file"
                 name="waypoint_images"
                 id="waypoint_images"
-                accept=".jpg,.png"
                 multiple
               />
             </div>
 
             <div class="form-group">
-              <label for="destination_image">Destination Image</label>
+              <label for="destination_image">目的地場所の写真</label>
               <input
                 class="form-control-file"
                 type="file"
                 name="destination_image"
                 id="destination_image"
-                accept=".jpg,.png"
                 required
               />
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary">提出</button>
           </form>
         </div>
       </div>
@@ -111,7 +108,7 @@
       <div class="row mt-3">
           <div class="col-lg-1"></div>
           <div class="col-lg-4">
-            <h4>Refreshes in <span id="timer"></span></h4>
+            <h4>計算しています。出来たらアプリケションがリフレッシュされます。 <span id="timer"></span></h4>
           </div>
         </div>
         <br>
@@ -141,11 +138,11 @@
             <thead>
               <tr>
                 <th scope="col">#</th>
-                <th scope="col">Source</th>
-                <th scope="col">Destination</th>
-                <th scope="col">Total Distance</th>
-                <th scope="col">Status</th>
-                <th scope="col">Map</th>
+                <th scope="col">出発の場所</th>
+                <th scope="col">目的地場所</th>
+                <th scope="col">距離</th>
+                <th scope="col">計算結果</th>
+                <th scope="col">マップ</th>
               </tr>
             </thead>
             <tbody>
@@ -157,13 +154,13 @@
                   <th>{{ job.total_distance }}</th>
                   <th>
                     {% if job.status == 'PRS' %}
-                      <button type="button" class="btn btn-warning btn-sm" disabled>PROCESSING</button>
+                      <button type="button" class="btn btn-warning btn-sm" disabled>プロセスされています</button>
                     {% endif %}
                     {% if job.status == 'COM' %}
-                      <button type="button" class="btn btn-success btn-sm" disabled>SUCCESS</button>
+                      <button type="button" class="btn btn-success btn-sm" disabled>成功</button>
                     {% endif %}
                     {% if job.status == 'ERR' %}
-                      <button type="button" class="btn btn-danger btn-sm" disabled>ERROR</button>
+                      <button type="button" class="btn btn-danger btn-sm" disabled>エラー</button>
                     {% endif %}
                   </th>
                   <th><a href="{{ job.static_map.image.url }}" target="_blank" class="btn-sm btn btn-danger">Map</a></th>
