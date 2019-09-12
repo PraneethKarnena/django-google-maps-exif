@@ -5,6 +5,7 @@ This views.py contains business logic of all the pages.
 import os
 import threading
 from tempfile import TemporaryFile
+from uuid import uuid4
 
 from PIL import Image
 from PIL.ExifTags import TAGS
@@ -196,7 +197,8 @@ def generate_static_map(job):
         r = requests.get(API_URL)
         tf.write(r.content)
         tf.seek(0)
-        f.image.save(f'{job.id}.png', File(tf))
+        name = str(uuid4())
+        f.image.save(f'{name}.png', File(tf))
     f.image_type = 'STA'
     f.save()
     job.static_map = f
