@@ -2,7 +2,7 @@ astroid==2.2.5
 autopep8==1.4.4
 certifi==2019.6.16
 chardet==3.0.4
-Django==2.2.5
+Django==2.2.8
 googlemaps==3.1.1
 gunicorn==19.9.0
 idna==2.8
